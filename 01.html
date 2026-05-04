@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>BTS World</title>
+
+<style>
+  body {
+    font-family: Arial;
+    background: #0f0f0f;
+    color: white;
+    text-align: center;
+  }
+
+  h1 {
+    color: #9b59ff;
+  }
+
+  button {
+    margin: 10px;
+    padding: 10px 15px;
+    border: none;
+    background: #9b59ff;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #7d3cff;
+  }
+
+  .card {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    background: #1c1c1c;
+    border-radius: 10px;
+    width: 180px;
+  }
+
+  img {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  audio {
+    width: 100%;
+    margin-top: 5px;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>💜 BTS World 💜</h1>
+
+<!-- BOTÕES -->
+<div>
+  <button onclick="carregarMusicas()">🎵 Músicas</button>
+  <button onclick="carregarImagens()">📸 Imagens</button>
+  <button onclick="limpar()">🧹 Limpar</button>
+</div>
+
+<!-- CONTEÚDO -->
+<section>
+  <div id="conteudo"></div>
+</section>
+
+<script>
+
+// 🎵 MÚSICAS (API iTunes)
+function carregarMusicas() {
+  document.getElementById("conteudo").innerHTML = "Carregando músicas...";
+
+  fetch("https://itunes.apple.com/search?term=BTS&media=music&limit=8")
+    .then(res => res.json())
+    .then(data => {
+
+      let html = "";
+
+      data.results.forEach(song => {
+        html += `
+          <div class="card">
+            <img src="${song.artworkUrl100}">
+            <p><strong>${song.trackName}</strong></p>
+            <p>${song.artistName}</p>
+            <audio controls src="${song.previewUrl}"></audio>
+          </div>
+        `;
+      });
+
+      document.getElementById("conteudo").innerHTML = html;
+    });
+}
+
+// 📸 IMAGENS (SEM API — não quebra)
+function carregarImagens() {
+  document.getElementById("conteudo").innerHTML = "Carregando imagens...";
+
+  fetch("https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=BTS%20kpop&gsrlimit=8&prop=pageimages&pithumbsize=300&format=json&origin=*")
+    .then(res => res.json())
+    .then(data => {
+
+      let html = "";
+
+      const pages = data.query.pages;
+
+      for (let key in pages) {
+        if (pages[key].thumbnail) {
+          html += `
+            <div class="card">
+              <img src="${pages[key].thumbnail.source}">
+            </div>
+          `;
+        }
+      }
+
+      document.getElementById("conteudo").innerHTML = html;
+    });
+}
+
+// 🧹 LIMPAR
+function limpar() {
+  document.getElementById("conteudo").innerHTML = "";
+}
+
+</script>
+
+</body>
+</html>
